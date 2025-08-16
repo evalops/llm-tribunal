@@ -1,0 +1,22 @@
+# Core dependencies
+pyyaml
+requests
+
+# DSPy and LLM providers
+dspy-ai
+openai
+anthropic
+
+# Data manipulation
+pandas
+numpy
+
+# Gateway dependencies (new)
+fastapi
+uvicorn[standard]
+httpx
+pydantic
+
+# Optional dependencies for advanced features
+pytest  # For testing
+jinja2  # For advanced prompt templating
