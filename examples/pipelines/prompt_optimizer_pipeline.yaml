@@ -1,0 +1,33 @@
+steps:
+  - id: create_dataset
+    type: CreateTestData
+    outputs: [dataset]
+
+  - id: setup_ollama
+    type: SetupOllama
+    outputs: [llm_config, lm_instance]
+    model: gpt-oss:20b
+
+  - id: optimize_prompts
+    type: SystematicPromptOptimizer
+    inputs: [dataset, lm_instance]
+    outputs: [best_prompt, best_accuracy, all_prompt_results]
+    metric_to_optimize: accuracy
+    signature_fields:
+      sentence:
+        - "input"
+        - "A sentence to classify."
+      sentiment:
+        - "output"
+        - "The sentiment of the sentence, which can be Positive, Negative, or Neutral."
+    prompt_components:
+      task_description:
+        - "Classify the sentiment of the following sentence."
+        - "You are a sentiment analysis expert. Classify the sentiment of this sentence."
+      output_format:
+        - " Your answer must be one of: Positive, Negative, or Neutral."
+        - " Respond with only the sentiment: Positive, Negative, or Neutral."
+
+  - id: print_best_prompt
+    type: PrintResults
+    inputs: [best_prompt, best_accuracy]

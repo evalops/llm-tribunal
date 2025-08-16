@@ -1,0 +1,69 @@
+# Advanced Multi-Dimensional Evaluation Pipeline
+# Demonstrates statistical significance, cost analysis, and multi-metrics
+
+steps:
+  # Data preparation
+  - id: load_data
+    type: CreateTestData
+    outputs: [dataset, raw_data]
+
+  # Model setup
+  - id: setup_gpt35
+    type: SetupOpenAI
+    outputs: [gpt35_config, gpt35_lm]
+    model: gpt-3.5-turbo
+
+  - id: setup_gpt4_mini
+    type: SetupOpenAI
+    outputs: [gpt4_mini_config, gpt4_mini_lm]
+    model: gpt-4o-mini
+
+  # Classifier creation
+  - id: create_gpt35_classifier
+    type: CreateClassifier
+    inputs: [gpt35_config]
+    outputs: [gpt35_classifier]
+
+  - id: create_gpt4_mini_classifier
+    type: CreateClassifier
+    inputs: [gpt4_mini_config]
+    outputs: [gpt4_mini_classifier]
+
+  # Multi-metric evaluation (enhanced with cost tracking)
+  - id: eval_gpt35_multimetric
+    type: MultiMetricEvaluateModel
+    inputs: [dataset, gpt35_classifier]
+    outputs: [gpt35_multimetrics, gpt35_eval]
+
+  - id: eval_gpt4_mini_multimetric
+    type: MultiMetricEvaluateModel
+    inputs: [dataset, gpt4_mini_classifier]
+    outputs: [gpt4_mini_multimetrics, gpt4_mini_eval]
+
+  # Statistical significance testing
+  - id: statistical_comparison
+    type: StatisticalSignificanceTest
+    inputs: [gpt35_multimetrics, gpt4_mini_multimetrics]
+    outputs: [statistical_analysis]
+
+  # Basic comparison for compatibility
+  - id: compare_models
+    type: CompareModels
+    inputs: [gpt35_multimetrics, gpt4_mini_multimetrics]
+    outputs: [comparison]
+
+  # Advanced reporting with statistical insights
+  - id: advanced_report
+    type: AdvancedComparisonReport
+    inputs: [comparison, statistical_analysis]
+    outputs: [advanced_report, text_report]
+
+  - id: print_advanced_results
+    type: PrintResults
+    inputs: [text_report]
+
+  - id: save_advanced_report
+    type: SaveReport
+    inputs: [text_report, advanced_report]
+    outputs: [saved_files]
+    output_file: advanced_evaluation_report.txt

@@ -1,0 +1,68 @@
+# Prompt Engineering Evaluation Pipeline
+# Compare different prompting strategies systematically
+
+steps:
+  # Data and model setup
+  - id: load_data
+    type: CreateTestData
+    outputs: [dataset, raw_data]
+
+  - id: setup_openai
+    type: SetupOpenAI
+    outputs: [llm_config, lm_instance]
+    model: gpt-3.5-turbo
+
+  # Generate prompt variations
+  - id: generate_prompts
+    type: PromptVariationGenerator
+    outputs: [prompt_strategies, strategy_count]
+
+  # Create classifiers for different prompting strategies
+  # Note: In a full implementation, these would use different prompts
+  - id: create_zero_shot_classifier
+    type: CreateClassifier
+    inputs: [llm_config]
+    outputs: [zero_shot_classifier]
+
+  - id: create_few_shot_classifier
+    type: CreateClassifier
+    inputs: [llm_config]
+    outputs: [few_shot_classifier]
+
+  # Evaluate each prompting strategy
+  - id: eval_zero_shot
+    type: MultiMetricEvaluateModel
+    inputs: [dataset, zero_shot_classifier]
+    outputs: [zero_shot_metrics, zero_shot_eval]
+
+  - id: eval_few_shot
+    type: MultiMetricEvaluateModel
+    inputs: [dataset, few_shot_classifier]
+    outputs: [few_shot_metrics, few_shot_eval]
+
+  # Statistical comparison
+  - id: prompt_statistical_test
+    type: StatisticalSignificanceTest
+    inputs: [zero_shot_metrics, few_shot_metrics]
+    outputs: [prompt_statistical_analysis]
+
+  # Comparison and reporting
+  - id: compare_prompts
+    type: CompareModels
+    inputs: [zero_shot_metrics, few_shot_metrics]
+    outputs: [prompt_comparison]
+
+  - id: prompt_advanced_report
+    type: AdvancedComparisonReport
+    inputs: [prompt_comparison, prompt_statistical_analysis]
+    outputs: [prompt_advanced_report, prompt_text_report]
+
+  - id: print_prompt_results
+    type: PrintResults
+    inputs: [prompt_text_report]
+
+  - id: save_prompt_report
+    type: SaveReport
+    inputs: [prompt_text_report, prompt_advanced_report]
+    outputs: [prompt_saved_files]
+    output_file: prompt_engineering_report.txt

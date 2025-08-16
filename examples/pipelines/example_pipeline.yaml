@@ -1,0 +1,30 @@
+# Example DAG-based evaluation pipeline
+# This pipeline demonstrates the complete sentiment evaluation workflow
+
+steps:
+  - id: setup_llm
+    type: DSPySetup
+    outputs: [dspy_lm, provider, model]
+    provider: ollama
+    model: gpt-oss:20b
+    base_url: http://localhost:11434
+
+  - id: load_data
+    type: CreateTestData
+    outputs: [dataset, raw_data]
+
+  - id: run_sentiment_analysis
+    type: SentimentAnalysis
+    inputs: [dataset, dspy_lm]
+    outputs: [predictions, prediction_time, examples_processed]
+
+  - id: evaluate_model
+    type: EvaluateModel
+    inputs: [dataset, predictions]
+    outputs: [metrics, eval_result]
+
+  - id: generate_report
+    type: ReportGenerator
+    inputs: [metrics]
+    outputs: [report, text_summary]
+    output_file: example_evaluation_report.txt

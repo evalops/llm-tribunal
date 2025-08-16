@@ -1,0 +1,41 @@
+# Example configuration file for DAG evaluation system
+# Copy this to config.yaml and modify as needed
+
+environment: development  # development, staging, production
+debug: false
+
+api:
+  # API keys (can also be set via environment variables)
+  openai_api_key: null  # Set OPENAI_API_KEY environment variable
+  anthropic_api_key: null  # Set ANTHROPIC_API_KEY environment variable
+  
+  # Optional: Custom API endpoints
+  openai_base_url: null
+  anthropic_base_url: null
+  
+  # Timeout and retry settings
+  default_timeout: 30
+  max_retries: 3
+
+cache:
+  enabled: true
+  cache_dir: ".dag_cache"
+  max_cache_size_mb: 1000
+  cache_ttl_hours: 24
+
+logging:
+  level: INFO  # DEBUG, INFO, WARNING, ERROR, CRITICAL
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  file_path: null  # Set to enable file logging
+  max_file_size_mb: 10
+  backup_count: 5
+  structured_logging: false  # Enable JSON structured logging
+
+evaluation:
+  default_model: "gpt-4o-mini"
+  default_temperature: 0.0
+  default_max_tokens: 1000
+  parallel_execution: true
+  max_concurrent_nodes: 4
+  default_retry_attempts: 3
+  retry_delay_seconds: 1.0

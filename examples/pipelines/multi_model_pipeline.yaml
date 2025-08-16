@@ -1,0 +1,92 @@
+# Multi-Model Evaluation Pipeline
+# Compares OpenAI and Anthropic models on sentiment classification
+
+steps:
+  # Shared data preparation
+  - id: load_data
+    type: CreateTestData
+    outputs: [dataset, raw_data]
+
+  # Setup different LLM providers
+  - id: setup_openai_gpt35
+    type: SetupOpenAI
+    outputs: [openai_gpt35_config, openai_gpt35_lm]
+    model: gpt-3.5-turbo
+
+  - id: setup_openai_gpt4
+    type: SetupOpenAI
+    outputs: [openai_gpt4_config, openai_gpt4_lm]
+    model: gpt-4
+
+  - id: setup_anthropic_haiku
+    type: SetupAnthropic
+    outputs: [anthropic_haiku_config, anthropic_haiku_lm]
+    model: claude-3-haiku-20240307
+
+  - id: setup_anthropic_sonnet
+    type: SetupAnthropic
+    outputs: [anthropic_sonnet_config, anthropic_sonnet_lm]
+    model: claude-3-5-sonnet-20241022
+
+  # Create classifiers for each model
+  - id: create_gpt35_classifier
+    type: CreateClassifier
+    inputs: [openai_gpt35_config]
+    outputs: [gpt35_classifier, gpt35_signature]
+
+  - id: create_gpt4_classifier
+    type: CreateClassifier
+    inputs: [openai_gpt4_config]
+    outputs: [gpt4_classifier, gpt4_signature]
+
+  - id: create_haiku_classifier
+    type: CreateClassifier
+    inputs: [anthropic_haiku_config]
+    outputs: [haiku_classifier, haiku_signature]
+
+  - id: create_sonnet_classifier
+    type: CreateClassifier
+    inputs: [anthropic_sonnet_config]
+    outputs: [sonnet_classifier, sonnet_signature]
+
+  # Evaluate each model
+  - id: eval_gpt35
+    type: EvaluateModel
+    inputs: [dataset, gpt35_classifier]
+    outputs: [gpt35_metrics, gpt35_eval_result]
+
+  - id: eval_gpt4
+    type: EvaluateModel
+    inputs: [dataset, gpt4_classifier]
+    outputs: [gpt4_metrics, gpt4_eval_result]
+
+  - id: eval_haiku
+    type: EvaluateModel
+    inputs: [dataset, haiku_classifier]
+    outputs: [haiku_metrics, haiku_eval_result]
+
+  - id: eval_sonnet
+    type: EvaluateModel
+    inputs: [dataset, sonnet_classifier]
+    outputs: [sonnet_metrics, sonnet_eval_result]
+
+  # Compare results
+  - id: compare_all_models
+    type: CompareModels
+    inputs: [gpt35_metrics, gpt4_metrics, haiku_metrics, sonnet_metrics]
+    outputs: [comparison]
+
+  - id: generate_report
+    type: GenerateComparisonReport
+    inputs: [comparison]
+    outputs: [comparison_report, text_report]
+
+  - id: print_comparison
+    type: PrintResults
+    inputs: [text_report]
+
+  - id: save_comparison
+    type: SaveReport
+    inputs: [text_report, comparison_report]
+    outputs: [saved_files]
+    output_file: multi_model_comparison.txt

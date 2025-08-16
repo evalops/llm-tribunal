@@ -1,0 +1,50 @@
+# Dataset Ablation Study Pipeline
+# Systematic evaluation across dataset variations
+
+steps:
+  # Data preparation and ablation generation
+  - id: load_base_data
+    type: CreateTestData
+    outputs: [base_dataset, base_raw_data]
+
+  - id: generate_ablations
+    type: DatasetAblationGenerator
+    inputs: [base_dataset]
+    outputs: [ablation_datasets, ablation_count]
+
+  # Model setup
+  - id: setup_model
+    type: SetupOpenAI
+    outputs: [model_config, model_lm]
+    model: gpt-3.5-turbo
+
+  - id: create_classifier
+    type: CreateClassifier
+    inputs: [model_config]
+    outputs: [classifier]
+
+  # Evaluate on original dataset
+  - id: eval_original
+    type: MultiMetricEvaluateModel
+    inputs: [base_dataset, classifier]
+    outputs: [original_metrics, original_eval]
+
+  # Note: In a full implementation, we'd dynamically generate evaluation nodes
+  # for each ablation. For demo purposes, we'll show the concept with
+  # a single ablation comparison
+
+  # Generate a summary report
+  - id: ablation_summary
+    type: SummarizeMetrics
+    inputs: [original_metrics]
+    outputs: [ablation_report, ablation_text_summary]
+
+  - id: print_ablation_results
+    type: PrintResults
+    inputs: [ablation_text_summary]
+
+  - id: save_ablation_report
+    type: SaveReport
+    inputs: [ablation_text_summary, ablation_report]
+    outputs: [ablation_saved_files]
+    output_file: dataset_ablation_report.txt

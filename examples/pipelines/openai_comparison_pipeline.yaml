@@ -1,0 +1,62 @@
+# OpenAI Model Comparison Pipeline  
+# Compare different OpenAI models on sentiment classification
+
+steps:
+  # Shared data preparation
+  - id: load_data
+    type: CreateTestData
+    outputs: [dataset, raw_data]
+
+  # Setup different OpenAI models
+  - id: setup_gpt35
+    type: SetupOpenAI
+    outputs: [gpt35_config, gpt35_lm]
+    model: gpt-3.5-turbo
+
+  - id: setup_gpt4_mini
+    type: SetupOpenAI
+    outputs: [gpt4_mini_config, gpt4_mini_lm]
+    model: gpt-4o-mini
+
+  # Create classifiers
+  - id: create_gpt35_classifier
+    type: CreateClassifier
+    inputs: [gpt35_config]
+    outputs: [gpt35_classifier, gpt35_signature]
+
+  - id: create_gpt4_mini_classifier
+    type: CreateClassifier
+    inputs: [gpt4_mini_config]
+    outputs: [gpt4_mini_classifier, gpt4_mini_signature]
+
+  # Evaluate models  
+  - id: eval_gpt35
+    type: EvaluateModel
+    inputs: [dataset, gpt35_classifier]
+    outputs: [gpt35_metrics, gpt35_eval_result]
+
+  - id: eval_gpt4_mini
+    type: EvaluateModel
+    inputs: [dataset, gpt4_mini_classifier]
+    outputs: [gpt4_mini_metrics, gpt4_mini_eval_result]
+
+  # Compare results
+  - id: compare_models
+    type: CompareModels
+    inputs: [gpt35_metrics, gpt4_mini_metrics]
+    outputs: [comparison]
+
+  - id: generate_report
+    type: GenerateComparisonReport
+    inputs: [comparison]
+    outputs: [comparison_report, text_report]
+
+  - id: print_comparison
+    type: PrintResults
+    inputs: [text_report]
+
+  - id: save_comparison
+    type: SaveReport
+    inputs: [text_report, comparison_report]
+    outputs: [saved_files]
+    output_file: openai_model_comparison.txt
