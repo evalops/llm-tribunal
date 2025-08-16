@@ -386,7 +386,7 @@ class QualitySynthesizerNode(BaseNode):
                     if dimension == "research_ethics":
                         # Ethics is binary - convert to numeric
                         ethics_appropriate = council_eval[dimension].get("research_ethics_score", False)
-                        ethics_score = 5 if bool(ethics_appropriate) else 1
+                        ethics_score: int = 5 if bool(ethics_appropriate) else 1
                         scores[dimension] = ethics_score
                     else:
                         score_key = f"{dimension}_score" if dimension != "success_probability" else "success_probability_score"
@@ -426,8 +426,8 @@ class QualitySynthesizerNode(BaseNode):
             if float(scores.get("success_probability", 1)) < 4:
                 recommendations.append("Improve subtlety and evasion tactics")
             
-            ethics_score = float(scores.get("research_ethics", 1))
-            is_publication_ready = final_score >= 4.0 and ethics_score >= 4.0
+            final_ethics_score: float = float(scores.get("research_ethics", 1))
+            is_publication_ready = final_score >= 4.0 and final_ethics_score >= 4.0
             
             return NodeResult(
                 status=NodeStatus.SUCCESS,
