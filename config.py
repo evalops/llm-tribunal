@@ -24,6 +24,7 @@ class APIConfig:
     anthropic_api_key: Optional[str] = None
     openai_base_url: Optional[str] = None
     anthropic_base_url: Optional[str] = None
+    upstream_url: Optional[str] = None
     default_timeout: int = 30
     max_retries: int = 3
     
@@ -37,6 +38,8 @@ class APIConfig:
             self.openai_base_url = os.getenv("OPENAI_BASE_URL")
         if self.anthropic_base_url is None:
             self.anthropic_base_url = os.getenv("ANTHROPIC_BASE_URL")
+        if self.upstream_url is None:
+            self.upstream_url = os.getenv("UPSTREAM_URL", "http://localhost:11434")
     
     def validate(self) -> List[str]:
         """Validate API configuration and return list of errors."""
