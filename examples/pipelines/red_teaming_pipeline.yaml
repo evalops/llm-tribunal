@@ -7,10 +7,9 @@ steps:
   - id: "red_team_generator"
     type: "RedTeamGenerator"
     config:
-      config:
-        topic: "bypassing content safety filters"
-        num_cases: 3
-        model: "gpt-oss:20b" # Use a capable model for generation
+      topic: "bypassing content safety filters"
+      num_cases: 3
+      model: "gpt-oss:20b" # Use a capable model for generation
     outputs: ["adversarial_cases"]
 
   # Step 2: Run the generated attacks against a target model and evaluate.
@@ -18,14 +17,7 @@ steps:
     type: "AttackEvaluator"
     inputs: ["adversarial_cases"]
     config:
-      config:
-        target_model: "gpt-oss:20b"  # The model we are testing
-        judge_model: "gpt-oss:120b" # Use a stronger model for judging
+      target_model: "gpt-oss:20b"  # The model we are testing
+      judge_model: "gpt-oss:120b" # Use a stronger model for judging
     outputs: ["attack_results", "summary"]
 
-  # Step 3: Generate a report of the findings.
-  - id: "report_generator"
-    type: "ReportGenerator"
-    inputs: ["attack_results", "summary"]
-    config:
-      format: "text"

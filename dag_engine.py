@@ -786,9 +786,29 @@ except ImportError as e:
 # Import and register adversarial nodes
 try:
     from nodes.adversarial import RedTeamGeneratorNode, AttackEvaluatorNode
+    from nodes.adversarial_judges import (
+        CreativityJudgeNode, TechnicalJudgeNode, SuccessProbabilityJudgeNode,
+        OWASPCategorizerNode, ResearchEthicsJudgeNode
+    )
+    from nodes.adversarial_council import (
+        AdversarialCouncilNode, IterativeRefinementEngineNode, QualitySynthesizerNode
+    )
 
+    # Register basic adversarial nodes
     NodeRegistry.register("RedTeamGenerator", RedTeamGeneratorNode)
     NodeRegistry.register("AttackEvaluator", AttackEvaluatorNode)
+    
+    # Register specialized judge nodes
+    NodeRegistry.register("CreativityJudge", CreativityJudgeNode)
+    NodeRegistry.register("TechnicalJudge", TechnicalJudgeNode)
+    NodeRegistry.register("SuccessProbabilityJudge", SuccessProbabilityJudgeNode)
+    NodeRegistry.register("OWASPCategorizer", OWASPCategorizerNode)
+    NodeRegistry.register("ResearchEthicsJudge", ResearchEthicsJudgeNode)
+    
+    # Register council and refinement nodes
+    NodeRegistry.register("AdversarialCouncil", AdversarialCouncilNode)
+    NodeRegistry.register("IterativeRefinementEngine", IterativeRefinementEngineNode)
+    NodeRegistry.register("QualitySynthesizer", QualitySynthesizerNode)
 
 except ImportError as e:
     print(f"Warning: Could not import adversarial nodes: {e}")
