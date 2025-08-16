@@ -12,7 +12,7 @@ import json
 import logging
 import time
 import uuid
-from typing import Dict, Any, Optional, List, Union
+from typing import Dict, Any, Optional, List, Union, AsyncIterator
 from datetime import datetime
 
 import uvicorn
@@ -78,7 +78,7 @@ class SafetyGateway:
             
             self.executor = DAGExecutor(config=self.config)
             self.executor.load_from_spec(policy_spec)
-            self.executor.validate()
+            self.executor.validate(strict=False)  # Allow external inputs
             
             logger.info(f"Safety policy loaded: {self.policy_config}")
             logger.info(f"Pipeline nodes: {list(self.executor.nodes.keys())}")
